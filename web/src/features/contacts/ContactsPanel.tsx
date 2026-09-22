@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Button,
   CircularProgress,
@@ -11,59 +10,27 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useAuth } from '../auth/auth-context';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { useContacts } from './use-contacts';
 import { ContactFormDialog } from './ContactFormDialog';
-import { formatPhone, phoneDigits } from './phone';
-import {
-  createContact,
-  deleteContact,
-  updateContact,
-  type ContactInput,
-} from '../../services/contacts-service';
-import type { Contact } from '../../types';
+import { useContactsPanel } from './use-contacts-panel';
+import { formatPhone } from './phone';
 
 export const ContactsPanel = ({ connectionId }: { connectionId: string }) => {
-  const { user } = useAuth();
-  const { contacts, loading } = useContacts(user?.uid, connectionId);
-
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<Contact | null>(null);
-  const [removing, setRemoving] = useState<Contact | null>(null);
-
-  const openCreate = () => {
-    setEditing(null);
-    setFormOpen(true);
-  };
-
-  const openEdit = (contact: Contact) => {
-    setEditing(contact);
-    setFormOpen(true);
-  };
-
-  const handleSubmit = async (input: ContactInput) => {
-    if (!user) return;
-    if (editing) await updateContact(editing.id, input);
-    else await createContact(user.uid, connectionId, input);
-  };
-
-  const validateContact = (input: ContactInput): string | null => {
-    const digits = phoneDigits(input.phone);
-    const duplicated = contacts.some(
-      (contact) =>
-        contact.id !== editing?.id && phoneDigits(contact.phone) === digits,
-    );
-    return duplicated
-      ? 'Já existe um contato com esse telefone nesta conexão.'
-      : null;
-  };
-
-  const handleDelete = async () => {
-    if (!removing) return;
-    await deleteContact(removing.id);
-    setRemoving(null);
-  };
+  const {
+    contacts,
+    loading,
+    formOpen,
+    editing,
+    removing,
+    openCreate,
+    openEdit,
+    closeForm,
+    submit,
+    validate,
+    askRemove,
+    cancelRemove,
+    confirmRemove,
+  } = useContactsPanel(connectionId);
 
   return (
     <div className="flex flex-col gap-4">
@@ -101,7 +68,7 @@ export const ContactsPanel = ({ connectionId }: { connectionId: string }) => {
                   <IconButton
                     edge="end"
                     size="small"
-                    onClick={() => setRemoving(contact)}
+                    onClick={() => askRemove(contact)}
                     aria-label="Excluir"
                     className="!ml-1"
                   >
@@ -122,17 +89,17 @@ export const ContactsPanel = ({ connectionId }: { connectionId: string }) => {
       <ContactFormDialog
         open={formOpen}
         contact={editing}
-        onSubmit={handleSubmit}
-        onClose={() => setFormOpen(false)}
-        validate={validateContact}
+        onSubmit={submit}
+        onClose={closeForm}
+        validate={validate}
       />
 
       <ConfirmDialog
         open={Boolean(removing)}
         title="Excluir contato"
         description={`Tem certeza que deseja excluir "${removing?.name}"? Esta ação não pode ser desfeita.`}
-        onConfirm={handleDelete}
-        onCancel={() => setRemoving(null)}
+        onConfirm={confirmRemove}
+        onCancel={cancelRemove}
       />
     </div>
   );
