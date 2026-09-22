@@ -194,7 +194,7 @@ export const MessagesPanel = ({ connectionId }: { connectionId: string }) => {
       <ConfirmDialog
         open={Boolean(removing)}
         title="Excluir mensagem"
-        description="Excluir esta mensagem?"
+        description="Tem certeza que deseja excluir esta mensagem? Esta ação não pode ser desfeita."
         onConfirm={handleDelete}
         onCancel={() => setRemoving(null)}
       />

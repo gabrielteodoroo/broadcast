@@ -118,7 +118,7 @@ export const ConnectionsPage = () => {
       <ConfirmDialog
         open={Boolean(removing)}
         title="Excluir conexão"
-        description={`Excluir "${removing?.name}"? Os contatos e mensagens dela continuam no banco, mas ficam órfãos.`}
+        description={`Tem certeza que deseja excluir "${removing?.name}"? Esta ação não pode ser desfeita.`}
         onConfirm={handleDelete}
         onCancel={() => setRemoving(null)}
       />
