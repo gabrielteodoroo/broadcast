@@ -1,5 +1,6 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { logger } from 'firebase-functions';
+import { auth } from 'firebase-functions/v1';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
@@ -8,6 +9,16 @@ initializeApp();
 const db = getFirestore();
 
 const BATCH_LIMIT = 500;
+
+export const createOwnerOnRegister = auth.user().onCreate(async (user) => {
+  await db.collection('owners').doc(user.uid).set({
+    name: user.displayName ?? '',
+    email: user.email ?? '',
+    createdAt: Timestamp.now(),
+  });
+
+  logger.info(`Owner criado para ${user.uid}`);
+});
 
 export const dispatchScheduledMessages = onSchedule(
   {
