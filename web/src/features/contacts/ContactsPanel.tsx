@@ -15,6 +15,7 @@ import { useAuth } from '../auth/auth-context';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { useContacts } from './use-contacts';
 import { ContactFormDialog } from './ContactFormDialog';
+import { formatPhone, phoneDigits } from './phone';
 import {
   createContact,
   deleteContact,
@@ -45,6 +46,17 @@ export const ContactsPanel = ({ connectionId }: { connectionId: string }) => {
     if (!user) return;
     if (editing) await updateContact(editing.id, input);
     else await createContact(user.uid, connectionId, input);
+  };
+
+  const validateContact = (input: ContactInput): string | null => {
+    const digits = phoneDigits(input.phone);
+    const duplicated = contacts.some(
+      (contact) =>
+        contact.id !== editing?.id && phoneDigits(contact.phone) === digits,
+    );
+    return duplicated
+      ? 'Já existe um contato com esse telefone nesta conexão.'
+      : null;
   };
 
   const handleDelete = async () => {
@@ -98,7 +110,10 @@ export const ContactsPanel = ({ connectionId }: { connectionId: string }) => {
                 </span>
               }
             >
-              <ListItemText primary={contact.name} secondary={contact.phone} />
+              <ListItemText
+                primary={contact.name}
+                secondary={formatPhone(contact.phone)}
+              />
             </ListItem>
           ))}
         </List>
@@ -109,12 +124,13 @@ export const ContactsPanel = ({ connectionId }: { connectionId: string }) => {
         contact={editing}
         onSubmit={handleSubmit}
         onClose={() => setFormOpen(false)}
+        validate={validateContact}
       />
 
       <ConfirmDialog
         open={Boolean(removing)}
         title="Excluir contato"
-        description={`Excluir "${removing?.name}"?`}
+        description={`Tem certeza que deseja excluir "${removing?.name}"? Esta ação não pode ser desfeita.`}
         onConfirm={handleDelete}
         onCancel={() => setRemoving(null)}
       />
