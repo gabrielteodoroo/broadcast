@@ -3,9 +3,6 @@
 SaaS multi-tenant de disparo de mensagens (fake), com **React + TypeScript + Vite**,
 **Material UI + Tailwind** e **Firebase** (Auth, Firestore realtime, Cloud Functions).
 
-Paradigma **funcional** (sem OO). Sem subcoleções no Firestore. Isolamento por cliente
-via `ownerId` + Firestore Security Rules.
-
 ## Estrutura
 
 ```
@@ -24,14 +21,11 @@ broadcast/
 └── firebase.json
 ```
 
-## Modelo de dados (coleções raiz, sem subcoleção)
+## Modelo de dados
 
 - `connections`  — `{ name, ownerId, createdAt }`
 - `contacts`     — `{ name, phone, ownerId, connectionId, createdAt }`
 - `messages`     — `{ body, ownerId, connectionId, contactIds[], status, scheduledAt, sentAt, createdAt }`
-
-Cada doc carrega `ownerId = auth.uid`. As rules garantem que um cliente só lê/escreve
-os próprios docs — o filtro no front é conveniência, o isolamento real vive nas rules.
 
 ## Agendamento
 
