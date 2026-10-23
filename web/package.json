@@ -1,33 +1,59 @@
 {
-  "name": "broadcast-web",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.6",
-    "@mui/material": "^6.1.6",
-    "@mui/x-date-pickers": "^7.22.2",
-    "dayjs": "^1.11.13",
-    "firebase": "^11.0.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.3",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.15",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11"
-  }
+	"name": "broadcast-web",
+	"version": "0.1.0",
+	"private": true,
+	"engines": {
+		"node": "22.22.0"
+	},
+	"scripts": {
+		"dev": "npx vite dev --mode development",
+		"build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 npx tsc && npx vite build --mode development",
+		"prod:build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 npx tsc && npx vite build --mode production",
+		"serve": "npx vite preview",
+		"watch": "tsc -w",
+		"test": "jest",
+		"deploy": "npm run prod:build && firebase deploy --only hosting",
+		"format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+		"lint:prettier:check": "prettier --check ./src",
+		"lint:prettier:fix": "prettier --write ./src",
+		"lint:eslint:check": "eslint ./src --max-warnings=0"
+	},
+	"dependencies": {
+		"@emotion/react": "11.14.0",
+		"@emotion/styled": "11.14.1",
+		"@mui/icons-material": "9.4.0",
+		"@mui/material": "9.4.0",
+		"@mui/x-date-pickers": "9.14.0",
+		"@tanstack/react-query": "^5.104.0",
+		"date-fns": "4.4.0",
+		"firebase": "12.19.0",
+		"jotai": "2.20.3",
+		"react": "19.3.0",
+		"react-dom": "19.3.0",
+		"react-router-dom": "7.18.4",
+		"rxjs": "7.8.2"
+	},
+	"devDependencies": {
+		"@types/jest": "30.0.0",
+		"@types/react": "19.3.0",
+		"@types/react-dom": "19.3.0",
+		"@typescript-eslint/eslint-plugin": "8.70.1",
+		"@typescript-eslint/parser": "8.70.1",
+		"@vitejs/plugin-react": "6.1.1",
+		"autoprefixer": "10.6.1",
+		"cross-env": "10.1.0",
+		"eslint": "10.11.0",
+		"eslint-plugin-check-file": "3.3.2",
+		"eslint-plugin-validate-filename": "1.2.0",
+		"jest": "30.5.2",
+		"postcss": "8.5.28",
+		"tailwindcss": "3.4.19",
+		"ts-jest": "29.4.14",
+		"typescript": "6.0.3",
+		"vite": "8.3.1"
+	},
+	"browserslist": {
+		"production": [">0.2%", "not dead", "not op_mini all"],
+		"development": ["last 1 chrome version", "last 1 firefox version", "last 3 safari version"]
+	}
 }
