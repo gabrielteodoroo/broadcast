@@ -1,9 +1,13 @@
 node_modules/
-dist/
-/functions/lib/
 *.tsbuildinfo
-.env
-.env.local
 *.log
 .firebase/
 .DS_Store
+
+/web/build/
+/functions/lib/
+
+.env
+.env.local
+.env.development
+.env.production
