@@ -1,13 +1,39 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "messages",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "status", "order": "ASCENDING" },
-        { "fieldPath": "scheduledAt", "order": "ASCENDING" }
-      ]
-    }
-  ],
-  "fieldOverrides": []
+	"indexes": [
+		{
+			"collectionGroup": "messages",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{ "fieldPath": "status", "order": "ASCENDING" },
+				{ "fieldPath": "scheduledAt", "order": "ASCENDING" }
+			]
+		},
+		{
+			"collectionGroup": "connections",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{ "fieldPath": "ownerId", "order": "ASCENDING" },
+				{ "fieldPath": "createdAt", "order": "DESCENDING" }
+			]
+		},
+		{
+			"collectionGroup": "contacts",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{ "fieldPath": "ownerId", "order": "ASCENDING" },
+				{ "fieldPath": "connectionId", "order": "ASCENDING" },
+				{ "fieldPath": "createdAt", "order": "DESCENDING" }
+			]
+		},
+		{
+			"collectionGroup": "messages",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{ "fieldPath": "ownerId", "order": "ASCENDING" },
+				{ "fieldPath": "connectionId", "order": "ASCENDING" },
+				{ "fieldPath": "createdAt", "order": "DESCENDING" }
+			]
+		}
+	],
+	"fieldOverrides": []
 }

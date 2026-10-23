@@ -1,25 +1,26 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
-    }
-  ],
-  "hosting": {
-    "public": "web/dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [{ "source": "**", "destination": "/index.html" }]
-  },
-  "emulators": {
-    "auth": { "port": 9099 },
-    "functions": { "port": 5001 },
-    "firestore": { "port": 8080 },
-    "hosting": { "port": 5000 },
-    "ui": { "enabled": true }
-  }
+	"firestore": {
+		"rules": "firestore.rules",
+		"indexes": "firestore.indexes.json"
+	},
+	"functions": [
+		{
+			"source": "functions",
+			"codebase": "default",
+			"predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
+			"ignore": ["node_modules", ".git", "*.log", "package-lock.json"]
+		}
+	],
+	"hosting": {
+		"public": "web/build",
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+		"rewrites": [{ "source": "**", "destination": "/index.html" }]
+	},
+	"emulators": {
+		"auth": { "port": 9099 },
+		"functions": { "port": 5001 },
+		"firestore": { "port": 8080 },
+		"hosting": { "port": 5000 },
+		"ui": { "enabled": true }
+	}
 }
