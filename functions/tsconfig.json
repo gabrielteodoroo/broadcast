@@ -1,16 +1,29 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2021",
-    "lib": ["es2021"],
-    "moduleResolution": "node",
-    "outDir": "lib",
-    "sourceMap": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true
-  },
-  "include": ["src"]
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"strict": true,
+		"lib": ["esnext"],
+		"types": ["jest", "node"],
+		"esModuleInterop": true,
+		"module": "commonjs",
+		"noImplicitReturns": false,
+		"resolveJsonModule": true,
+		"rootDir": "src",
+		"outDir": "lib",
+		"sourceMap": true,
+		"removeComments": true,
+		"pretty": true,
+		"target": "es2022",
+		"skipLibCheck": true,
+		"paths": {
+			"models/*": ["./src/models/*"],
+			"utils/*": ["./src/utils/*"],
+			"facades/*": ["./src/facades/*"],
+			"functions/*": ["./src/functions/*"],
+			"firebase-firestore": ["./src/firebase-firestore.ts"],
+			"environment": ["./src/environment.ts"]
+		}
+	},
+	"compileOnSave": true,
+	"include": ["src"]
 }
