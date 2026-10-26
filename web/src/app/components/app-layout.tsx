@@ -96,7 +96,7 @@ function SidebarContent(props: SidebarContentProps) {
 						<ListItemIcon sx={{ minWidth: 40 }}>
 							<HubIcon fontSize="small" />
 						</ListItemIcon>
-						
+
 						<ListItemText primary="Conexões" slotProps={{ primary: { sx: { fontWeight: 600 } } }} />
 					</ListItemButton>
 				</List>
