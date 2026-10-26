@@ -35,19 +35,17 @@ function countCollectionReads(query: Query<unknown>, length = 1) {
 	firebaseDebugLog('get query$', key, collectionRefCountCache[key], `+${length || '+'}`);
 }
 
-function snapToData<T>(snapshot: DocumentSnapshot<T | DocumentData>, idField = 'id'): T | null {
+function snapToData<T>(snapshot: DocumentSnapshot<T | DocumentData>): T | null {
 	if (!snapshot.exists()) return null;
 
 	const data = snapshot.data();
 
-	if (idField) {
-		(data as Record<string, unknown>)[idField] = snapshot.id;
-	}
+	(data as Record<string, unknown>).id = snapshot.id;
 
 	return data as T;
 }
 
-export function docData$<T>(ref: DocumentReference<T | DocumentData>, idField = 'id'): Observable<T | null> {
+export function docData$<T>(ref: DocumentReference<T | DocumentData>): Observable<T | null> {
 	return new Observable<DocumentSnapshot<T | DocumentData>>(subscriber => {
 		const unsubscribe = onSnapshot(ref, subscriber);
 		return { unsubscribe };
@@ -55,12 +53,12 @@ export function docData$<T>(ref: DocumentReference<T | DocumentData>, idField = 
 		map(snap => {
 			countDocReads(ref);
 
-			return snapToData<T>(snap, idField);
+			return snapToData<T>(snap);
 		})
 	);
 }
 
-export function collectionData$<T>(query: Query<T | DocumentData>, idField = 'id'): Observable<T[]> {
+export function collectionData$<T>(query: Query<T | DocumentData>): Observable<T[]> {
 	return new Observable<QuerySnapshot<T | DocumentData>>(subscriber => {
 		const unsubscribe = onSnapshot(query, subscriber);
 		return { unsubscribe };
@@ -71,9 +69,7 @@ export function collectionData$<T>(query: Query<T | DocumentData>, idField = 'id
 			return snapshot.docs.map(snap => {
 				const data = snap.data();
 
-				if (idField) {
-					(data as Record<string, unknown>)[idField] = snap.id;
-				}
+				(data as Record<string, unknown>).id = snap.id;
 
 				return data as T;
 			});
