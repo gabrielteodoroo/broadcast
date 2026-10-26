@@ -14,7 +14,7 @@ import { getOwnerId, useCurrentUser } from 'app/apps/auth/auth.model';
 
 export type MessageFilter = 'all' | MessageStatus;
 
-export const messageFilterAtom = atom<MessageFilter>('all');
+const messageFilterAtom = atom<MessageFilter>('all');
 
 const formOpenAtom = atom(false);
 const editingMessageAtom = atom<MessageModel | null>(null);
