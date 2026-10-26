@@ -12,6 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { ConfirmDialog } from 'app/components/confirm-dialog';
+import { LoadError } from 'app/components/load-error';
 import { MessageFormDialog } from 'app/apps/messages/message-form-dialog';
 import { MessageFilter, useMessagesPanel } from 'app/apps/messages/messages.facade';
 import { formatDateTime } from 'core/utils/date';
@@ -26,12 +27,14 @@ export function MessagesPanel(props: MessagesPanelProps) {
 	const {
 		contacts,
 		isLoading,
+		loadError,
 		visible,
 		filter,
 		setFilter,
 		formOpen,
 		editing,
 		removing,
+		removeError,
 		openCreate,
 		openEdit,
 		closeForm,
@@ -67,6 +70,11 @@ export function MessagesPanel(props: MessagesPanelProps) {
 				<div className="flex justify-center p-8">
 					<CircularProgress />
 				</div>
+			) : loadError ? (
+				<LoadError
+					error={loadError}
+					message="Não foi possível carregar as mensagens. Atualize a página para tentar novamente."
+				/>
 			) : visible.length === 0 ? (
 				<Typography color="text.secondary">Nenhuma mensagem neste filtro.</Typography>
 			) : (
@@ -134,6 +142,7 @@ export function MessagesPanel(props: MessagesPanelProps) {
 				open={Boolean(removing)}
 				title="Excluir mensagem"
 				description="Tem certeza que deseja excluir esta mensagem? Esta ação não pode ser desfeita."
+				error={removeError}
 				onConfirm={confirmRemove}
 				onCancel={cancelRemove}
 			/>

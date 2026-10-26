@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -13,12 +14,13 @@ interface ConfirmDialogProps {
 	title: string;
 	description: string;
 	confirmLabel?: string;
+	error?: string;
 	onConfirm: () => void;
 	onCancel: () => void;
 }
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
-	const { open, title, description, confirmLabel = 'Excluir', onConfirm, onCancel } = props;
+	const { open, title, description, confirmLabel = 'Excluir', error, onConfirm, onCancel } = props;
 
 	return (
 		<Dialog open={open} onClose={onCancel} fullWidth maxWidth="xs">
@@ -43,6 +45,11 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
 					{title}
 				</Typography>
 				<DialogContentText>{description}</DialogContentText>
+				{error && (
+					<Alert severity="error" sx={{ mt: 2, textAlign: 'left' }}>
+						{error}
+					</Alert>
+				)}
 			</DialogContent>
 			<DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
 				<Button onClick={onCancel} fullWidth variant="outlined">

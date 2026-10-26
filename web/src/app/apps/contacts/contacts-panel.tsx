@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { ConfirmDialog } from 'app/components/confirm-dialog';
+import { LoadError } from 'app/components/load-error';
 import { ContactFormDialog } from 'app/apps/contacts/contact-form-dialog';
 import { useContactsPanel } from 'app/apps/contacts/contacts.facade';
 import { formatPhone } from 'core/utils/phone';
@@ -23,9 +24,11 @@ export function ContactsPanel(props: ContactsPanelProps) {
 	const {
 		contacts,
 		isLoading,
+		loadError,
 		formOpen,
 		editing,
 		removing,
+		removeError,
 		openCreate,
 		openEdit,
 		closeForm,
@@ -49,6 +52,11 @@ export function ContactsPanel(props: ContactsPanelProps) {
 				<div className="flex justify-center p-8">
 					<CircularProgress />
 				</div>
+			) : loadError ? (
+				<LoadError
+					error={loadError}
+					message="Não foi possível carregar os contatos. Atualize a página para tentar novamente."
+				/>
 			) : contacts.length === 0 ? (
 				<Typography color="text.secondary">Nenhum contato nesta conexão.</Typography>
 			) : (
@@ -92,6 +100,7 @@ export function ContactsPanel(props: ContactsPanelProps) {
 				open={Boolean(removing)}
 				title="Excluir contato"
 				description={`Tem certeza que deseja excluir "${removing?.name}"? Esta ação não pode ser desfeita.`}
+				error={removeError}
 				onConfirm={confirmRemove}
 				onCancel={cancelRemove}
 			/>

@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { ConfirmDialog } from 'app/components/confirm-dialog';
+import { LoadError } from 'app/components/load-error';
 import { ConnectionFormDialog } from 'app/apps/connections/connection-form-dialog';
 import { useConnectionsPage } from 'app/apps/connections/connections.facade';
 
@@ -16,9 +17,11 @@ export function ConnectionsPage() {
 	const {
 		connections,
 		isLoading,
+		loadError,
 		formOpen,
 		editing,
 		removing,
+		removeError,
 		openCreate,
 		openEdit,
 		closeForm,
@@ -42,6 +45,11 @@ export function ConnectionsPage() {
 				<div className="flex justify-center p-8">
 					<CircularProgress />
 				</div>
+			) : loadError ? (
+				<LoadError
+					error={loadError}
+					message="Não foi possível carregar as conexões. Atualize a página para tentar novamente."
+				/>
 			) : connections.length === 0 ? (
 				<Typography color="text.secondary">Nenhuma conexão ainda. Crie a primeira.</Typography>
 			) : (
@@ -77,6 +85,7 @@ export function ConnectionsPage() {
 				open={Boolean(removing)}
 				title="Excluir conexão"
 				description={`Tem certeza que deseja excluir "${removing?.name}"? Esta ação não pode ser desfeita.`}
+				error={removeError}
 				onConfirm={confirmRemove}
 				onCancel={cancelRemove}
 			/>

@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { ContactInput, ContactModel } from 'app/apps/contacts/contacts.model';
 import { formatPhone } from 'core/utils/phone';
+import { messageFromFirestoreError } from 'core/utils/firestore-error';
 
 interface ContactFormDialogProps {
 	open: boolean;
@@ -52,6 +53,8 @@ export function ContactFormDialog(props: ContactFormDialogProps) {
 		try {
 			await onSubmit(input);
 			onClose();
+		} catch (error) {
+			setError(messageFromFirestoreError(error, 'Não foi possível salvar o contato. Tente novamente.'));
 		} finally {
 			setSubmitting(false);
 		}

@@ -11,6 +11,7 @@ import {
 import useMessages from 'app/apps/messages/hooks/useMessages';
 import useContacts from 'app/apps/contacts/hooks/useContacts';
 import { getOwnerId, useCurrentUser } from 'app/apps/auth/auth.model';
+import { messageFromFirestoreError } from 'core/utils/firestore-error';
 
 export type MessageFilter = 'all' | MessageStatus;
 
@@ -19,6 +20,7 @@ const messageFilterAtom = atom<MessageFilter>('all');
 const formOpenAtom = atom(false);
 const editingMessageAtom = atom<MessageModel | null>(null);
 const removingMessageAtom = atom<MessageModel | null>(null);
+const removeErrorAtom = atom('');
 
 const VISIBLE_RECIPIENTS = 2;
 
@@ -32,19 +34,21 @@ export function useMessagesPanel(props: UseMessagesPanelProps) {
 	const user = useCurrentUser();
 	const ownerId = getOwnerId(user);
 
-	const { messages, isLoading } = useMessages({ ownerId, connectionId });
+	const { messages, isLoading, error } = useMessages({ ownerId, connectionId });
 
-	const { contacts } = useContacts({ ownerId, connectionId });
+	const { contacts, error: contactsError } = useContacts({ ownerId, connectionId });
 
 	const filter = useAtomValue(messageFilterAtom);
 	const formOpen = useAtomValue(formOpenAtom);
 	const editing = useAtomValue(editingMessageAtom);
 	const removing = useAtomValue(removingMessageAtom);
+	const removeError = useAtomValue(removeErrorAtom);
 
 	const setFilter = useSetAtom(messageFilterAtom);
 	const setFormOpen = useSetAtom(formOpenAtom);
 	const setEditing = useSetAtom(editingMessageAtom);
 	const setRemoving = useSetAtom(removingMessageAtom);
+	const setRemoveError = useSetAtom(removeErrorAtom);
 
 	const contactNames = useMemo(
 		() => new Map(contacts.map(contact => [contact.id, contact.name])),
@@ -77,11 +81,29 @@ export function useMessagesPanel(props: UseMessagesPanelProps) {
 		await createMessage({ ownerId, connectionId, input });
 	}
 
+	function askRemove(message: MessageModel) {
+		setRemoveError('');
+		setRemoving(message);
+	}
+
+	function cancelRemove() {
+		setRemoveError('');
+		setRemoving(null);
+	}
+
 	async function confirmRemove() {
 		if (!removing) return;
 
-		await deleteMessage(removing.id);
-		setRemoving(null);
+		setRemoveError('');
+
+		try {
+			await deleteMessage(removing.id);
+			setRemoving(null);
+		} catch (error) {
+			setRemoveError(
+				messageFromFirestoreError(error, 'Não foi possível excluir a mensagem. Tente novamente.')
+			);
+		}
 	}
 
 	function recipientsOf(message: MessageModel) {
@@ -95,18 +117,20 @@ export function useMessagesPanel(props: UseMessagesPanelProps) {
 	return {
 		contacts,
 		isLoading,
+		loadError: error ?? contactsError,
 		visible,
 		filter,
 		setFilter,
 		formOpen,
 		editing,
 		removing,
+		removeError,
 		openCreate,
 		openEdit,
 		closeForm: () => setFormOpen(false),
 		submit,
-		askRemove: setRemoving,
-		cancelRemove: () => setRemoving(null),
+		askRemove,
+		cancelRemove,
 		confirmRemove,
 		recipientsOf,
 	};

@@ -6,6 +6,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import useConnection from 'app/apps/connections/hooks/useConnection';
+import { LoadError } from 'app/components/load-error';
 import { ContactsPanel } from 'app/apps/contacts/contacts-panel';
 import { MessagesPanel } from 'app/apps/messages/messages-panel';
 
@@ -13,7 +14,7 @@ type TabKey = 'contacts' | 'messages';
 
 export function ConnectionDetailPage() {
 	const { connectionId = '' } = useParams();
-	const { connection } = useConnection({ connectionId });
+	const { connection, error } = useConnection({ connectionId });
 
 	const [tab, setTab] = useState<TabKey>('contacts');
 
@@ -25,6 +26,11 @@ export function ConnectionDetailPage() {
 				</Link>
 				<Typography color="text.primary">{connection?.name ?? '...'}</Typography>
 			</Breadcrumbs>
+
+			<LoadError
+				error={error}
+				message="Não foi possível carregar esta conexão. Atualize a página para tentar novamente."
+			/>
 
 			<Tabs value={tab} onChange={(_, value: TabKey) => setTab(value)}>
 				<Tab value="contacts" label="Contatos" />

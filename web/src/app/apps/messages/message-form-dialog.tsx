@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ContactModel } from 'app/apps/contacts/contacts.model';
 import { MessageInput, MessageModel } from 'app/apps/messages/messages.model';
+import { messageFromFirestoreError } from 'core/utils/firestore-error';
 
 interface MessageFormDialogProps {
 	open: boolean;
@@ -70,6 +71,8 @@ export function MessageFormDialog(props: MessageFormDialogProps) {
 				scheduledAt: schedule && scheduledAt ? scheduledAt.getTime() : null,
 			});
 			onClose();
+		} catch (error) {
+			setError(messageFromFirestoreError(error, 'Não foi possível salvar a mensagem. Tente novamente.'));
 		} finally {
 			setSubmitting(false);
 		}

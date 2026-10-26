@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -6,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { ConnectionModel } from 'app/apps/connections/connections.model';
+import { messageFromFirestoreError } from 'core/utils/firestore-error';
 
 interface ConnectionFormDialogProps {
 	open: boolean;
@@ -18,14 +20,19 @@ export function ConnectionFormDialog(props: ConnectionFormDialogProps) {
 	const { open, connection, onSubmit, onClose } = props;
 
 	const [name, setName] = useState('');
+	const [error, setError] = useState('');
 	const [submitting, setSubmitting] = useState(false);
 
 	useEffect(() => {
-		if (open) setName(connection?.name ?? '');
+		if (!open) return;
+
+		setName(connection?.name ?? '');
+		setError('');
 	}, [open, connection]);
 
 	async function handleSubmit(event: FormEvent) {
 		event.preventDefault();
+		setError('');
 
 		if (!name.trim()) return;
 
@@ -34,6 +41,8 @@ export function ConnectionFormDialog(props: ConnectionFormDialogProps) {
 		try {
 			await onSubmit(name);
 			onClose();
+		} catch (error) {
+			setError(messageFromFirestoreError(error, 'Não foi possível salvar a conexão. Tente novamente.'));
 		} finally {
 			setSubmitting(false);
 		}
@@ -43,7 +52,8 @@ export function ConnectionFormDialog(props: ConnectionFormDialogProps) {
 		<Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
 			<form onSubmit={handleSubmit}>
 				<DialogTitle>{connection ? 'Editar conexão' : 'Nova conexão'}</DialogTitle>
-				<DialogContent>
+				<DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+					{error && <Alert severity="error">{error}</Alert>}
 					<TextField
 						autoFocus
 						label="Nome"

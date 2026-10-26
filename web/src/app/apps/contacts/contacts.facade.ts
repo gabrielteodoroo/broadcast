@@ -9,10 +9,12 @@ import {
 import useContacts from 'app/apps/contacts/hooks/useContacts';
 import { getOwnerId, useCurrentUser } from 'app/apps/auth/auth.model';
 import { phoneDigits } from 'core/utils/phone';
+import { messageFromFirestoreError } from 'core/utils/firestore-error';
 
 const formOpenAtom = atom(false);
 const editingContactAtom = atom<ContactModel | null>(null);
 const removingContactAtom = atom<ContactModel | null>(null);
+const removeErrorAtom = atom('');
 
 interface UseContactsPanelProps {
 	connectionId: string;
@@ -24,15 +26,17 @@ export function useContactsPanel(props: UseContactsPanelProps) {
 	const user = useCurrentUser();
 	const ownerId = getOwnerId(user);
 
-	const { contacts, isLoading } = useContacts({ ownerId, connectionId });
+	const { contacts, isLoading, error } = useContacts({ ownerId, connectionId });
 
 	const formOpen = useAtomValue(formOpenAtom);
 	const editing = useAtomValue(editingContactAtom);
 	const removing = useAtomValue(removingContactAtom);
+	const removeError = useAtomValue(removeErrorAtom);
 
 	const setFormOpen = useSetAtom(formOpenAtom);
 	const setEditing = useSetAtom(editingContactAtom);
 	const setRemoving = useSetAtom(removingContactAtom);
+	const setRemoveError = useSetAtom(removeErrorAtom);
 
 	function openCreate() {
 		setEditing(null);
@@ -65,26 +69,46 @@ export function useContactsPanel(props: UseContactsPanelProps) {
 		return duplicated ? 'Já existe um contato com esse telefone nesta conexão.' : null;
 	}
 
+	function askRemove(contact: ContactModel) {
+		setRemoveError('');
+		setRemoving(contact);
+	}
+
+	function cancelRemove() {
+		setRemoveError('');
+		setRemoving(null);
+	}
+
 	async function confirmRemove() {
 		if (!removing) return;
 
-		await deleteContact(removing.id);
-		setRemoving(null);
+		setRemoveError('');
+
+		try {
+			await deleteContact(removing.id);
+			setRemoving(null);
+		} catch (error) {
+			setRemoveError(
+				messageFromFirestoreError(error, 'Não foi possível excluir o contato. Tente novamente.')
+			);
+		}
 	}
 
 	return {
 		contacts,
 		isLoading,
+		loadError: error,
 		formOpen,
 		editing,
 		removing,
+		removeError,
 		openCreate,
 		openEdit,
 		closeForm: () => setFormOpen(false),
 		submit,
 		validate,
-		askRemove: setRemoving,
-		cancelRemove: () => setRemoving(null),
+		askRemove,
+		cancelRemove,
 		confirmRemove,
 	};
 }
