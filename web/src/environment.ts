@@ -20,5 +20,3 @@ export function firebaseDebugLog(...args: unknown[]) {
 
 	console.log('[firebase]', ...args);
 }
-
-export default environment;

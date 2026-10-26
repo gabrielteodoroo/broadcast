@@ -15,7 +15,4 @@ const environment: EnvironmentConfig = {
 
 export const { firebaseConfig, firebaseDebug } = environment;
 
-export function firebaseDebugLog() {
-}
-
-export default environment;
+export function firebaseDebugLog() {}
